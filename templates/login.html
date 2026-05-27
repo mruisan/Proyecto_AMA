@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Iniciar Sesión - AMA{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center my-5">
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow border-0 rounded-3">
+            <div class="card-header bg-dark text-white text-center py-4">
+                <h4 class="mb-0 fw-bold text-uppercase"><i class="bi bi-shield-lock-fill me-2 text-primary"></i>Acceso AMA</h4>
+                <p class="mb-0 text-muted small mt-1">Portal Operativo de la Armada</p>
+            </div>
+            <div class="card-body p-4">
+                <form action="{{ url_for('auth.login') }}" method="POST">
+                    
+                    <div class="mb-3">
+                        <label for="usuario" class="form-label text-secondary fw-semibold">Usuario</label>
+                        <input type="text" class="form-control" id="usuario" name="username" required placeholder="Introduzca su usuario">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="password" class="form-label text-secondary fw-semibold">Contraseña</label>
+                        <input type="password" class="form-control" id="password" name="password" required placeholder="••••••••">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100 fw-bold py-2 text-uppercase mb-3">Entrar</button>
+                    
+                    <div class="text-center small">
+                        <span class="text-secondary">¿Quieres registrarte?</span> 
+                        <a href="{{ url_for('auth.registro') }}" class="text-decoration-none fw-semibold">Regístrate aquí</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

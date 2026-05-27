@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+
+{% block title %}Tablón de Colaboración - AMA{% endblock %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-md-8 text-center text-md-start">
+        <h2 class="fw-bold text-dark"><i class="bi bi-briefcase me-2 text-success"></i>Red de Servicios y Colaboración</h2>
+        <p class="text-secondary mb-0">Tablón unificado de la Armada. Comparte coche para tus traslados o intercambia soporte técnico y formación.</p>
+    </div>
+    <div class="col-md-4 text-center text-md-end mt-3 mt-md-0">
+        <a href="{{ url_for('servicios.crear_servicio') }}" class="btn btn-success fw-bold shadow-sm">
+            <i class="bi bi-plus-circle me-1"></i> Publicar Anuncio / Servicio
+        </a>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm border-0 bg-white rounded-3">
+            <div class="card-body p-4">
+                <h6 class="fw-bold text-secondary mb-3"><i class="bi bi-sliders me-2 text-success"></i>Filtrar anuncios (Opcionales)</h6>
+                
+                <form action="{{ url_for('servicios.listar_servicios') }}" method="GET" class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label small fw-semibold text-muted">¿Qué necesitas?</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="bi bi-arrow-left-right"></i></span>
+                            <select name="tipo" class="form-select bg-light">
+                                <option value="">Cualquier tipo</option>
+                                <option value="OFRECE" {% if tipo == 'OFRECE' %}selected{% endif %}>Ofrecer servicio</option>
+                                <option value="BUSCA" {% if tipo == 'BUSCA' %}selected{% endif %}>Buscar servicio</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <label class="form-label small fw-semibold text-muted">Categoría</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="bi bi-tag"></i></span>
+                            <select name="categoria" class="form-select bg-light">
+                                <option value="">Todas las categorías</option>
+                                <option value="Movilidad/Coche" {% if categoria == 'Movilidad/Coche' %}selected{% endif %}>Movilidad/Coche</option>
+                                <option value="Informática" {% if categoria == 'Informática' %}selected{% endif %}>Informática</option>
+                                <option value="Mecánica" {% if categoria == 'Mecánica' %}selected{% endif %}>Mecánica</option>
+                                <option value="Administrativo" {% if categoria == 'Administrativo' %}selected{% endif %}>Administrativo</option>
+                                <option value="Idiomas/Clases" {% if categoria == 'Idiomas/Clases' %}selected{% endif %}>Idiomas/Clases</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <label class="form-label small fw-semibold text-muted">Palabras clave (Descripción / Título)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                            <input type="text" name="descripcion" class="form-control bg-light border-start-0" placeholder="Ej: Madrid, reparación, inglés..." value="{{ descripcion if descripcion else '' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-2 d-flex align-items-end gap-2">
+                        <button type="submit" class="btn btn-dark w-100 fw-bold">Filtrar</button>
+                        {% if ha_filtrado %}
+                            <a href="{{ url_for('servicios.listar_servicios') }}" class="btn btn-outline-secondary" title="Limpiar todos los filtros">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    {% if servicios %}
+        {% for servicio in servicios %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm border-0 bg-white">
+                <div class="card-body d-flex flex-column p-4">
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="badge py-2 px-3 text-uppercase font-monospace 
+                            {% if servicio.tipo == 'OFRECE' %}bg-success-subtle text-success border border-success
+                            {% else %}bg-primary-subtle text-primary border border-primary{% endif %}">
+                            <i class="bi {% if servicio.tipo == 'OFRECE' %}bi-heart-fill{% else %}bi-question-circle-fill{% endif %} me-1"></i>
+                            {{ servicio.tipo }}
+                        </span>
+                        
+                        <span class="text-secondary small fw-semibold">
+                            {% if servicio.categoria == 'Movilidad/Coche' %}<i class="bi bi-car-front-fill me-1 text-success"></i>
+                            {% elif servicio.categoria == 'Informática' %}<i class="bi bi-laptop me-1 text-info"></i>
+                            {% elif servicio.categoria == 'Mecánica' %}<i class="bi bi-tools me-1 text-warning"></i>
+                            {% elif servicio.categoria == 'Administrativo' %}<i class="bi bi-file-earmark-text me-1 text-primary"></i>
+                            {% elif servicio.categoria == 'Idiomas/Clases' %}<i class="bi bi-book me-1 text-danger"></i>
+                            {% else %}<i class="bi bi-tag me-1 text-secondary"></i>{% endif %}
+                            {{ servicio.categoria }}
+                        </span>
+                    </div>
+
+                    <h5 class="fw-bold text-dark mb-2">{{ servicio.titulo }}</h5>
+
+                    {% if servicio.categoria == 'Movilidad/Coche' and servicio.origen and servicio.destino %}
+                    <div class="bg-light p-3 rounded-3 mb-2 my-2">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-circle-fill text-success me-2 small"></i>
+                            <span class="small text-dark fw-medium"><strong>Origen:</strong> {{ servicio.origen }}</span>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-geo-alt-fill text-danger me-2 small"></i>
+                            <span class="small text-dark fw-medium"><strong>Destino:</strong> {{ servicio.destino }}</span>
+                        </div>
+                        {% if servicio.plazas %}
+                        <div class="mt-2 text-end">
+                            <span class="badge bg-white text-dark border font-monospace">{{ servicio.plazas }} plazas disp.</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <p class="text-secondary small flex-grow-1" style="white-space: pre-line;">{{ servicio.descripcion }}</p>
+                    
+                    {% if session.usuario and (session.usuario.usuario == servicio.usuario_usuario or session.usuario.rol == 'admin') %}
+                    <div class="d-flex gap-2 my-2">
+                        <a href="#" class="btn btn-sm btn-outline-secondary w-50 py-1 small"><i class="bi bi-pencil-square me-1"></i>Editar</a>
+                        
+                        <form action="{{ url_for('servicios.eliminar_servicio', servicio_id=servicio._id) }}" method="POST" class="w-50 m-0" onsubmit="return confirm('¿Seguro que deseas eliminar este anuncio de servicio?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger w-100 py-1 small">
+                                <i class="bi bi-trash3 me-1"></i>Eliminar
+                            </button>
+                        </form>
+                    </div>
+                    {% endif %}
+
+                    <hr class="text-muted my-3">
+
+                    <div class="d-flex justify-content-between align-items-center bg-light p-2 rounded-3">
+                        <div class="small text-muted">
+                            <i class="bi bi-person-fill me-1"></i>Anunciante: <strong>{{ servicio.usuario_usuario }}</strong>
+                        </div>
+                        
+                        {% if servicio.contacto %}
+                            {% if session.usuario %}
+                            <div class="small text-dark fw-medium">
+                                <i class="bi bi-telephone-outbound text-success me-1"></i>{{ servicio.contacto }}
+                            </div>
+                            {% else %}
+                            <div class="small text-muted fst-italic" title="Inicia sesión para ver los datos de contacto">
+                                <i class="bi bi-lock-fill text-secondary me-1"></i>Contacto oculto
+                            </div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="text-center py-5 bg-white rounded-3 shadow-sm border border-dashed">
+                <i class="bi bi-people display-1 text-muted mb-3"></i>
+                {% if ha_filtrado %}
+                    <h4 class="fw-bold text-secondary">No se encontraron servicios</h4>
+                    <p class="text-muted px-3">Ningún anuncio del tablón coincide con los criterios de filtrado seleccionados.</p>
+                    <a href="{{ url_for('servicios.listar_servicios') }}" class="btn btn-success btn-sm fw-bold mt-2">Restablecer filtros</a>
+                {% else %}
+                    <h4 class="fw-bold text-secondary">Tablón de anuncios vacío</h4>
+                    <p class="text-muted px-3">Publica el primer anuncio de soporte, formación o coche compartido de la unidad.</p>
+                    <a href="{{ url_for('servicios.crear_servicio') }}" class="btn btn-success btn-sm fw-bold mt-2">Publicar Anuncio</a>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

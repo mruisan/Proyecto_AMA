@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma Armada - Inicio Profesional</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Estilos específicos para asegurar visibilidad y el carrusel */
+        .hero-slider {
+            position: relative;
+            height: 75vh;
+            overflow: hidden;
+            background: #000;
+        }
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            background-size: cover;
+            background-position: center;
+        }
+        .slide.active { opacity: 1; }
+        
+        .hero-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 33, 71, 0.5); /* Capa para legibilidad */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        /* Corrección de color en Modal para que siempre sea negro */
+        .modal-content { color: #000 !important; }
+        .modal-content label { color: #000 !important; font-weight: 500; }
+        .form-control { color: #000 !important; border: 1px solid #ced4da; }
+        .form-control::placeholder { color: #6c757d !important; }
+        
+        .btn-gold {
+            background-color: #ffcc00;
+            color: #002147;
+            font-weight: 700;
+            border: none;
+        }
+        .btn-gold:hover { background-color: #e6b800; color: #002147; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="container d-flex justify-content-between align-items-center">
+        <a href="index.html">
+            <img src="img/logo3.png" alt="Logo Armada" style="height:70px; padding: 5px 0;">
+        </a>
+        <nav class="d-flex align-items-center">
+            <ul class="nav">
+                <li class="nav-item"><a class="nav-link text-white" href="habitacional.html">Vivienda</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="servicios.html">Servicios</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="mercado.html">Mercado</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="ocio.html">Ocio</a></li>
+            </ul>
+            <button class="btn btn-gold ms-3 px-4" data-bs-toggle="modal" data-bs-target="#modalAuth">ACCEDER</button>
+        </nav>
+    </div>
+</header>
+
+<main>
+    <section class="hero-slider">
+        <div class="slide active" style="background-image: url('img/slider1.jpg');"></div>
+        <div class="slide" style="background-image: url('img/slider2.jpg');"></div>
+        <div class="slide" style="background-image: url('img/slider3.jpg');"></div>
+        
+        <div class="hero-overlay">
+            <div class="text-center text-white">
+                <h1 class="display-2 fw-bold">PLATAFORMA ARMADA</h1>
+                <p class="lead fs-3">Bienestar y Operatividad para el Personal Militar</p>
+                <a href="#servicios" class="btn btn-gold btn-lg mt-3">Ver Categorías</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="servicios" class="py-5 bg-light">
+        <div class="container text-center">
+            <h2 class="mb-5" style="color: #002147; font-weight: 700;">NUESTRAS ÁREAS</h2>
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="card h-100 border-0 shadow-sm p-4">
+                        <div class="fs-1 mb-2">🏠</div>
+                        <h4 class="h5">Vivienda</h4>
+                        <p class="small">Gestión de alojamientos y residencias.</p>
+                        <a href="habitacional.html" class="btn btn-outline-primary btn-sm mt-auto">Entrar</a>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card h-100 border-0 shadow-sm p-4">
+                        <div class="fs-1 mb-2">🛠️</div>
+                        <h4 class="h5">Servicios</h4>
+                        <p class="small">Red de colaboración profesional.</p>
+                        <a href="servicios.html" class="btn btn-outline-primary btn-sm mt-auto">Entrar</a>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card h-100 border-0 shadow-sm p-4">
+                        <div class="fs-1 mb-2">🛒</div>
+                        <h4 class="h5">Mercado</h4>
+                        <p class="small">Compraventa segura entre compañeros.</p>
+                        <a href="mercado.html" class="btn btn-outline-primary btn-sm mt-auto">Entrar</a>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card h-100 border-0 shadow-sm p-4">
+                        <div class="fs-1 mb-2">⚓</div>
+                        <h4 class="h5">Ocio</h4>
+                        <p class="small">Cultura, deporte y eventos.</p>
+                        <a href="ocio.html" class="btn btn-outline-primary btn-sm mt-auto">Entrar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="bg-dark text-white py-4">
+    <div class="container text-center">
+        <p class="mb-0">&copy; 2026 Armada - Todos los derechos reservados</p>
+    </div>
+</footer>
+
+<div class="modal fade" id="modalAuth" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0">
+            <div class="modal-body p-4">
+                <ul class="nav nav-tabs mb-4 justify-content-center" id="authTabs">
+                    <li class="nav-item">
+                        <button class="nav-link active fw-bold" data-bs-toggle="tab" data-bs-target="#paneLogin">LOGIN</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link fw-bold" data-bs-toggle="tab" data-bs-target="#paneRegister">REGISTRO</button>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="paneLogin">
+                        <form>
+                            <div class="mb-3">
+                                <label class="form-label">Email Institucional</label>
+                                <input type="email" class="form-control" placeholder="usuario@mde.es" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Contraseña</label>
+                                <input type="password" class="form-control" placeholder="••••••••" required>
+                            </div>
+                            <button class="btn btn-primary w-100 py-2 fw-bold">ENTRAR</button>
+                        </form>
+                    </div>
+
+                    <div class="tab-pane fade" id="paneRegister">
+                        <form>
+                            <div class="row g-2 mb-2">
+                                <div class="col-md-6">
+                                    <label class="form-label">Nombre</label>
+                                    <input type="text" class="form-control" placeholder="Ej: Juan" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Apellidos</label>
+                                    <input type="text" class="form-control" placeholder="Ej: García Pérez" required>
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label">Email Personal / Militar</label>
+                                <input type="email" class="form-control" placeholder="juan@mde.es" required>
+                            </div>
+                            <div class="row g-2 mb-2">
+                                <div class="col-md-6">
+                                    <label class="form-label">Teléfono</label>
+                                    <input type="tel" class="form-control" placeholder="600 000 000">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">DNI / TIM</label>
+                                    <input type="text" class="form-control" placeholder="12345678X">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Unidad / Destino Actual</label>
+                                <select class="form-select">
+                                    <option value="">Selecciona Unidad</option>
+                                    <option>Cuartel General de la Armada</option>
+                                    <option>Base Naval de Rota</option>
+                                    <option>Arsenal de Ferrol</option>
+                                    <option>Arsenal de Cartagena</option>
+                                    <option>Flota / Buques</option>
+                                    <option>Otros</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Crear Contraseña</label>
+                                <input type="password" class="form-control" placeholder="Mínimo 8 caracteres" required>
+                            </div>
+                            <button class="btn btn-success w-100 py-2 fw-bold">CREAR CUENTA</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Lógica del Carrusel (Slide automático)
+    let current = 0;
+    const slides = document.querySelectorAll(".slide");
+    
+    function changeSlide() {
+        slides[current].classList.remove("active");
+        current = (current + 1) % slides.length;
+        slides[current].classList.add("active");
+    }
+    
+    setInterval(changeSlide, 5000); // Cambia cada 5 segundos
+</script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}Soluciones Habitacionales - AMA{% endblock %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-md-8 text-center text-md-start">
+        <h2 class="fw-bold text-dark"><i class="bi bi-house-door me-2 text-primary"></i>Soluciones de Alojamiento</h2>
+        <p class="text-secondary mb-0">Encuentra o comparte vivienda, habitaciones disponibles o permutas con otros miembros de la Armada.</p>
+    </div>
+    <div class="col-md-4 text-center text-md-end mt-3 mt-md-0">
+        <a href="{{ url_for('habitabilidad.crear_inmueble') }}" class="btn btn-primary fw-bold shadow-sm">
+            <i class="bi bi-plus-circle me-1"></i> Publicar Alojamiento
+        </a>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm border-0 bg-white rounded-3">
+            <div class="card-body p-4">
+                <h6 class="fw-bold text-secondary mb-3"><i class="bi bi-sliders me-2 text-primary"></i>Criterios de búsqueda (Opcionales)</h6>
+                
+                <form action="{{ url_for('habitabilidad.listar_inmuebles') }}" method="GET" class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label small fw-semibold text-muted">Ubicación / Zona</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-geo-alt"></i></span>
+                            <input type="text" name="ubicacion" class="form-control bg-light border-start-0" placeholder="Ej: Ferrol, Rota, Cádiz..." value="{{ ubicacion if ubicacion else '' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <label class="form-label small fw-semibold text-muted">Precio %Mínimo (€/mes)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-currency-euro"></i></span>
+                            <input type="number" name="precio_max" class="form-control bg-light border-start-0" placeholder="Ej: 600" value="{{ precio_max if precio_max else '' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-2">
+                        <label class="form-label small fw-semibold text-muted">Habitaciones mín.</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-door-open"></i></span>
+                            <input type="number" name="habitaciones" class="form-control bg-light border-start-0" placeholder="Mín: 1" min="1" value="{{ habitaciones if habitaciones else '' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-2 d-flex align-items-end gap-2">
+                        <button type="submit" class="btn btn-dark w-100 fw-bold">Filtrar</button>
+                        {% if ha_filtrado %}
+                            <a href="{{ url_for('habitabilidad.listar_inmuebles') }}" class="btn btn-outline-secondary" title="Limpiar todos los filtros">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    {% if inmuebles %}
+        {% for inmueble in inmuebles %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm border-0 position-relative">
+                <img src="{{ url_for('static', filename=inmueble.imagen if inmueble.imagen else 'img/default_house.jpg') }}" 
+                     class="card-img-top" style="height: 200px; object-fit: cover;" alt="Imagen de {{ inmueble.titulo }}">
+                
+                <span class="position-absolute top-0 end-0 m-3 badge {% if inmueble.tipo_vivienda == 'Habitación' %}bg-info text-dark{% else %}bg-success{% endif %} text-uppercase">
+                    {{ inmueble.tipo_vivienda }}
+                </span>
+                
+                <div class="card-body p-4">
+                    <h5 class="card-title fw-bold text-truncate mb-2" title="{{ inmueble.titulo }}">
+                        {{ inmueble.titulo }}
+                    </h5>
+                    <p class="text-muted small mb-3"><i class="bi bi-geo-alt-fill text-danger me-1"></i>{{ inmueble.ubicacion }}</p>
+                    
+                    <p class="card-text text-secondary text-clamp mb-4" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                        {{ inmueble.descripcion }}
+                    </p>
+                    
+                    {% if session.usuario and (session.usuario.usuario == inmueble.propietario_usuario or session.usuario.rol == 'admin') %}
+                    <div class="d-flex gap-2 mb-3 mt-2">
+                        <a href="#" class="btn btn-sm btn-outline-secondary w-50 py-1 small"><i class="bi bi-pencil-square me-1"></i>Editar</a>
+                        <form action="{{ url_for('habitabilidad.eliminar_inmueble', inmueble_id=inmueble._id) }}" method="POST" class="w-50 m-0" onsubmit="return confirm('¿Seguro que deseas eliminar este alojamiento?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger w-100 py-1 small">
+                                <i class="bi bi-trash3 me-1"></i>Eliminar
+                            </button>
+                        </form>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="border-top pt-3 d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-muted small d-block">Precio/Mes</span>
+                            <span class="fs-4 fw-extrabold text-dark">{{ inmueble.precio | int }}€</span>
+                        </div>
+                        <div class="text-end">
+                            <span class="text-muted small d-block">Habitaciones</span>
+                            <span class="badge bg-secondary"><i class="bi bi-door-open-fill me-1"></i>{{ inmueble.habitaciones }}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-footer bg-light border-0 p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted small"><i class="bi bi-person me-1"></i>Ofertante: <strong>{{ inmueble.propietario_usuario }}</strong></span>
+                        
+                        {% if inmueble.contacto %}
+                            {% if session.usuario %}
+                                <span class="text-dark fw-semibold small"><i class="bi bi-telephone text-primary me-1"></i>{{ inmueble.contacto }}</span>
+                            {% else %}
+                                <span class="text-muted fst-italic small" title="Inicia sesión para ver los datos de contacto">
+                                    <i class="bi bi-lock-fill text-secondary me-1"></i>Contacto oculto
+                                </span>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="text-center py-5 bg-white rounded-3 shadow-sm border border-dashed">
+                <i class="bi bi-houses text-muted display-1 mb-3"></i>
+                {% if ha_filtrado %}
+                    <h4 class="fw-bold text-secondary">Ningún alojamiento coincide con los filtros</h4>
+                    <p class="text-muted px-3">Prueba a flexibilizar los criterios de precio, ubicación o número de habitaciones.</p>
+                    <a href="{{ url_for('habitabilidad.listar_inmuebles') }}" class="btn btn-dark btn-sm fw-bold mt-2">
+                        Restablecer filtros
+                    </a>
+                {% else %}
+                    <h4 class="fw-bold text-secondary">No hay alojamientos disponibles</h4>
+                    <p class="text-muted px-3">Sé el primero de tu unidad en publicar una vivienda compartida o alquiler vacacional.</p>
+                    <a href="{{ url_for('habitabilidad.crear_inmueble') }}" class="btn btn-dark btn-sm fw-bold mt-2">
+                        Publicar mi primer anuncio
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

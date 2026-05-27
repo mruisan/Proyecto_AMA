@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+
+{% block title %}Panel de Administración - AMA{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="fw-bold text-dark"><i class="bi bi-sliders text-danger me-2"></i>Panel de Administración General</h2>
+        <p class="text-secondary">Consola de control exclusivo para administradores del sistema. Gestión de seguridad, trazabilidad operativa y usuarios.</p>
+    </div>
+</div>
+
+<ul class="nav nav-tabs mb-4 border-bottom-2">
+    <li class="nav-item">
+        <a class="nav-link {% if seccion == 'auditoria' %}active fw-bold text-dark border-bottom-0{% else %}text-secondary{% endif %}" 
+            href="{{ url_for('admin.ver_logs') }}">
+            <i class="bi bi-shield-lock-fill text-warning me-2"></i>Historial de Auditoría
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if seccion == 'usuarios' %}active fw-bold text-dark border-bottom-0{% else %}text-secondary{% endif %}" 
+            href="{{ url_for('admin.gestionar_usuarios') }}">
+            <i class="bi bi-people-fill text-info me-2"></i>Gestión de Usuarios
+        </a>
+    </li>
+</ul>
+
+{% if seccion == 'auditoria' %}
+<div class="card shadow border-0 rounded-3">
+    <div class="card-header bg-dark text-white p-3 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 fw-bold"><i class="bi bi-list-check me-2"></i>Logs de Actividad del Sistema</h5>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('admin.exportar_pdf') }}" class="btn btn-sm btn-danger fw-bold shadow-sm">
+                <i class="bi bi-file-earmark-pdf me-1"></i> Exportar a PDF
+            </a>
+            <span class="badge bg-secondary d-flex align-items-center px-3">{{ logs|length }} eventos</span>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light text-secondary small text-uppercase">
+                    <tr>
+                        <th class="ps-4" style="width: 18%;">Fecha y Hora (UTC)</th>
+                        <th style="width: 15%;">Acción</th>
+                        <th style="width: 12%;">Usuario</th>
+                        <th style="width: 40%;">Descripción del Evento</th>
+                        <th class="pe-4" style="width: 15%;">IP Origen</th>
+                    </tr>
+                </thead>
+                <tbody class="small">
+                    {% for log in logs %}
+                    <tr>
+                        <td class="ps-4 text-muted font-monospace">{{ log.fecha.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+                        <td>
+                            <span class="badge w-100 py-2 {% if log.accion == 'LOGIN_EXITOSO' %}bg-success-subtle text-success{% else %}bg-secondary-subtle text-secondary{% endif %}">
+                                {{ log.accion }}
+                            </span>
+                        </td>
+                        <td class="fw-bold text-dark">{{ log.usuario_tip or log.usuario }}</td>
+                        <td class="text-secondary text-wrap">{{ log.descripcion }}</td>
+                        <td class="pe-4 text-muted font-monospace"><i class="bi bi-laptop me-1"></i>{{ log.ip_origen }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% elif seccion == 'usuarios' %}
+<div class="card shadow border-0 rounded-3">
+    <div class="card-header bg-dark text-white p-3 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 fw-bold"><i class="bi bi-people me-2"></i>Usuarios Registrados ({{ usuarios|length }})</h5>
+        <button class="btn btn-sm btn-info text-white fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalNuevoUsuario">
+            <i class="bi bi-person-plus-fill me-1"></i> Registrar Nuevo Usuario
+        </button>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light text-secondary small text-uppercase">
+                    <tr>
+                        <th class="ps-4">Usuario</th>
+                        <th>Rol</th>
+                        <th>Estado</th>
+                        <th class="text-end pe-4">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="small">
+                    {% for user in usuarios %}
+                    <tr class="{% if user.activo == False %}table-light text-muted{% endif %}">
+                        <td class="ps-4 fw-bold text-dark">{{ user.usuario }}</td>
+                        
+                        <td>
+                            <form action="{{ url_for('admin.cambiar_rol', id_usuario=user._id) }}" method="POST">
+                                <select name="nuevo_rol" class="form-select form-select-sm" onchange="this.form.submit()">
+                                    <option value="militar" {% if user.rol == 'militar' %}selected{% endif %}>Militar</option>
+                                    <option value="admin" {% if user.rol == 'admin' %}selected{% endif %}>Administrador</option>
+                                </select>
+                            </form>
+                        </td>
+
+                        <td>
+                            <form action="{{ url_for('admin.alternar_estado', id_usuario=user._id) }}" method="POST">
+                                <button type="submit" class="btn btn-sm {% if user.activo == False %}btn-danger{% else %}btn-success{% endif %} w-100">
+                                    {{ "BLOQUEADO" if user.activo == False else "ACTIVO" }}
+                                </button>
+                            </form>
+                        </td>
+
+                        <td class="text-end pe-4">
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">Gestionar</button>
+                                <ul class="dropdown-menu">
+                                    <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalEditarUsuario{{ user._id }}">Editar Datos</button></li>
+                                    <li>
+                                        <form action="{{ url_for('admin.restablecer_password', id_usuario=user._id) }}" method="POST">
+                                            <button type="submit" class="dropdown-item text-warning">Restablecer Contraseña</button>
+                                        </form>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form action="{{ url_for('admin.eliminar_usuario', id_usuario=user._id) }}" method="POST" onsubmit="return confirm('¿Eliminar usuario {{user.usuario}}?');">
+                                            <button type="submit" class="dropdown-item text-danger">Eliminar Usuario</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% for user in usuarios %}
+<div class="modal fade" id="modalEditarUsuario{{ user._id }}" tabindex="-1">
+    <div class="modal-dialog">
+        <form action="{{ url_for('admin.editar_usuario', id_usuario=user._id) }}" method="POST" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Usuario: {{ user.usuario }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <label class="small text-muted">Nombre</label>
+                <input type="text" name="nombre" class="form-control mb-2" value="{{ user.nombre or '' }}">
+                <label class="small text-muted">Apellidos</label>
+                <input type="text" name="apellidos" class="form-control mb-2" value="{{ user.apellidos or '' }}">
+                <label class="small text-muted">Correo electrónico</label>
+                <input type="email" name="correo" class="form-control mb-2" value="{{ user.correo or '' }}">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endfor %}
+
+<div class="modal fade" id="modalNuevoUsuario" tabindex="-1">
+    <div class="modal-dialog">
+        <form action="{{ url_for('admin.registrar_usuario') }}" method="POST" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Registrar Nuevo Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" name="usuario" class="form-control mb-2" placeholder="TIP (Identificador)" required>
+                <input type="text" name="nombre" class="form-control mb-2" placeholder="Nombre">
+                <input type="text" name="apellidos" class="form-control mb-2" placeholder="Apellidos">
+                <input type="email" name="correo" class="form-control mb-2" placeholder="Correo electrónico">
+                <input type="password" name="password" class="form-control mb-2" placeholder="Contraseña inicial" required>
+                <select name="rol" class="form-select mb-2">
+                    <option value="militar">Usuario</option>
+                    <option value="admin">Administrador</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="submit" class="btn btn-info text-white">Registrar</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

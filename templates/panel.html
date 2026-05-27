@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Principal - AMA{% endblock %}
+
+{% block content %}
+<div id="carouselPrincipal" class="carousel slide carousel-fade position-fixed top-0 start-0 w-100 h-100" data-bs-ride="carousel" style="z-index: -1;">
+    <div class="carousel-inner h-100">
+        <div class="carousel-item active h-100">
+            <img src="{{ url_for('static', filename='img/img1.jpg') }}" class="d-block w-100 h-100" style="object-fit: cover;" alt="Slide 1">
+        </div>
+        <div class="carousel-item h-100">
+            <img src="{{ url_for('static', filename='img/img2.jpg') }}" class="d-block w-100 h-100" style="object-fit: cover;" alt="Slide 2">
+        </div>
+        <div class="carousel-item h-100">
+            <img src="{{ url_for('static', filename='img/img3.jpg') }}" class="d-block w-100 h-100" style="object-fit: cover;" alt="Slide 3">
+        </div>
+    </div>
+    <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark" style="opacity: 0.4;"></div>
+</div>
+
+<div class="container-fluid py-5">
+    <div class="row mb-4">
+        <div class="col-12 text-center text-md-start text-white">
+            {% if session.usuario %}
+                <h2 class="fw-bold">Bienvenido, {{ session.usuario.nombre }}</h2>
+                <p>Selecciona el módulo operativo que necesites gestionar en el sistema AMA.</p>
+            {% else %}
+                <h2 class="fw-bold">Panel de Publicaciones Pública</h2>
+                <p>Bienvenido al sistema AMA. Explora libremente los tablones del personal de la Armada.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for info in [
+            {'icon': 'bi-house-door-fill', 'color': 'primary', 'title': 'Alojamiento y Vivienda', 'text': 'Buscador y publicación de alternativas habitacionales, alquileres compartidos o intercambios de casas para comisiones y cursos de la Armada.', 'url': 'habitabilidad.listar_inmuebles'},
+            {'icon': 'bi-person-gear', 'color': 'success', 'title': 'Servicios y Colaboración', 'text': 'Tablón de ayuda mutua e intercambio corporativo. Ofrece conocimientos o solicita apoyo técnico, administrativo, mecánico o trayectos conjuntos de coche compartido.', 'url': 'servicios.listar_servicios'},
+            {'icon': 'bi-shop', 'color': 'info', 'title': 'Compraventa y Artículos', 'text': 'Plataforma interna de adquisición, venta o intercambio de artículos particulares (vehículos, electrónica, enseres, ocio) entre miembros de la dotación.', 'url': 'mercado.listar_material'},
+            {'icon': 'bi-calendar-heart-fill', 'color': 'warning', 'title': 'Ocio y Convivencia', 'text': 'Agenda cultural, torneos deportivos inter-unidades y actividades recreativas organizadas por y para los miembros de la dotación.', 'url': 'ocio.listar_planes'}
+        ] %}
+        <div class="col-md-6 col-xl-3">
+            <div class="card h-100 shadow-sm border-0 bg-white bg-opacity-75">
+                <div class="card-body p-4 d-flex flex-column">
+                    <div class="mb-3 text-{{ info.color }}">
+                        <i class="bi {{ info.icon }} display-5"></i>
+                    </div>
+                    <h5 class="card-title fw-bold">{{ info.title }}</h5>
+                    <p class="card-text text-dark small flex-grow-1">{{ info.text }}</p>
+                    <a href="{{ url_for(info.url) }}" class="btn btn-outline-dark w-100 btn-sm fw-semibold mt-3">Acceder Módulo</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}Publicar Anuncio - AMA{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="mb-3">
+            <a href="{{ url_for('servicios.listar_servicios') }}" class="text-decoration-none text-secondary small fw-semibold">
+                <i class="bi bi-arrow-left me-1"></i> Volver al tablón colaborativo
+            </a>
+        </div>
+
+        <div class="card shadow border-0 rounded-3">
+            <div class="card-header bg-success text-white p-4">
+                <h4 class="mb-0 fw-bold"><i class="bi bi-patch-plus-fill me-2"></i>Publicar Anuncio en la Red de Servicios</h4>
+                <p class="mb-0 text-white-50 small mt-1">Anuncio verificado bajo la identidad del usuario: <strong>{{ session.usuario.usuario }}</strong></p>
+            </div>
+            
+            <div class="card-body p-4">
+                <form action="{{ url_for('servicios.crear_servicio') }}" method="POST">
+                    
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="tipo" class="form-label text-secondary fw-semibold">¿Qué necesitas hacer?</label>
+                            <select class="form-select" id="tipo" name="tipo" required>
+                                <option value="OFRECE" selected>Ofrecer un servicio / ayuda / plazas</option>
+                                <option value="SOLICITA">Solicitar un servicio / ayuda / transporte</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="categoria" class="form-label text-secondary fw-semibold">Categoría del Servicio</label>
+                            <select class="form-select" id="categoria" name="categoria" required>
+                                <option value="Movilidad/Coche">Movilidad y Compartir Coche (Rutas)</option>
+                                <option value="Informática">Informática y Conectividad</option>
+                                <option value="Mecánica">Mecánica y Automoción</option>
+                                <option value="Administrativo">Trámites y Soporte Administrativo</option>
+                                <option value="Idiomas/Clases">Idiomas, Clases y Formación</option>
+                                <option value="Otros">Otras Colaboraciones</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="seccion-viaje" class="bg-light p-3 rounded-3 mb-3 border">
+                        <h6 class="fw-bold text-success mb-3"><i class="bi bi-pin-map-fill me-1"></i>Datos específicos del trayecto</h6>
+                        <div class="row g-3">
+                            <div class="col-md-5">
+                                <label for="origen" class="form-label small text-secondary fw-semibold">Punto de Origen</label>
+                                <input type="text" class="form-control form-control-sm" id="origen" name="origen" placeholder="Ej: Base Naval de Rota">
+                            </div>
+                            <div class="col-md-5">
+                                <label for="destino" class="form-label small text-secondary fw-semibold">Punto de Destino</label>
+                                <input type="text" class="form-control form-control-sm" id="destino" name="destino" placeholder="Ej: Arsenal de Ferrol">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="plazas" class="form-label small text-secondary fw-semibold">Plazas</label>
+                                <input type="number" class="form-control form-control-sm" id="plazas" name="plazas" value="3" min="1" max="8">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="titulo" class="form-label text-secondary fw-semibold">Título del Anuncio</label>
+                        <input type="text" class="form-control" id="titulo" name="titulo" required 
+                               placeholder="Ej: Viaje Rota - Ferrol fin de semana / Configuro certificados digitales">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label text-secondary fw-semibold">Descripción detallada</label>
+                        <textarea class="form-control" id="descripcion" name="descripcion" rows="4" required
+                                  placeholder="Escribe aquí las normas del viaje, precio de aportación para combustible, o el detalle del soporte técnico..."></textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="contacto" class="form-label text-secondary fw-semibold">Datos de contacto (Opcional)</label>
+                        <input type="text" class="form-control" id="contacto" name="contacto" placeholder="Ej: Extensión interna 4231 o Tel: 600XXXXXX">
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end border-top pt-3">
+                        <a href="{{ url_for('servicios.listar_servicios') }}" class="btn btn-light px-4">Cancelar</a>
+                        <button type="submit" class="btn btn-success px-5 fw-bold text-white">Publicar Anuncio</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const selectCategoria = document.getElementById('categoria');
+    const seccionViaje = document.getElementById('seccion-viaje');
+    const inputOrigen = document.getElementById('origen');
+    const inputDestino = document.getElementById('destino');
+
+    function alternarCampos() {
+        if (selectCategoria.value === 'Movilidad/Coche') {
+            seccionViaje.style.display = 'block';
+            inputOrigen.required = true;
+            inputDestino.required = true;
+        } else {
+            seccionViaje.style.display = 'none';
+            inputOrigen.required = false;
+            inputDestino.required = false;
+            inputOrigen.value = '';
+            inputDestino.value = '';
+        }
+    }
+
+    selectCategoria.addEventListener('change', alternarCampos);
+    alternarCampos();
+</script>
+{% endblock %}

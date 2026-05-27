@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Armada - Servicios</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+    <div class="container d-flex justify-content-between align-items-center">
+        <a href="index.html"><img src="img/logo3.png" alt="Logo" style="height:60px;"></a>
+        <nav class="d-flex align-items-center">
+            <ul class="nav">
+                <li class="nav-item"><a class="nav-link" href="habitacional.html">Vivienda</a></li>
+                <li class="nav-item"><a class="nav-link" href="servicios.html">Servicios</a></li>
+                <li class="nav-item"><a class="nav-link" href="mercado.html">Mercado</a></li>
+                <li class="nav-item"><a class="nav-link" href="ocio.html">Ocio</a></li>
+            </ul>
+            <button class="btn btn-outline-light ms-3" data-bs-toggle="modal" data-bs-target="#modalAuth">Login</button>
+        </nav>
+    </div>
+</header>
+
+<main class="container py-5">
+    <h2 class="section-title text-center">Red de Servicios y Colaboración</h2>
+    <p class="text-center mb-5">Comparte tus habilidades o encuentra ayuda dentro de la comunidad de la Armada.</p>
+    
+    <div class="floating-form">
+        <h4 class="mb-4 text-primary">Ofrecer un Servicio</h4>
+        <form>
+            <div class="mb-3">
+                <label class="form-label">¿Qué servicio ofreces?</label>
+                <input type="text" class="form-control" placeholder="Ej: Mudanzas, Asesoría, Clases..." required>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Categoría</label>
+                    <select class="form-select">
+                        <option>Movilidad y Transporte</option>
+                        <option>Asesoría y Formación</option>
+                        <option>Reparaciones / Hogar</option>
+                        <option>Otros</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Ubicación / Base</label>
+                    <input type="text" class="form-control" placeholder="Ej: Ferrol, Rota...">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Descripción del servicio</label>
+                <textarea class="form-control" rows="4" placeholder="Explica en qué consiste tu ayuda..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 py-2">Publicar Servicio</button>
+        </form>
+    </div>
+</main>
+
+<footer><div class="container">&copy; 2026 Armada - Todos los derechos reservados</div></footer>
+
+<div class="modal fade" id="modalAuth" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body p-4">
+                <ul class="nav nav-pills mb-4 justify-content-center" id="pills-tab">
+                    <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#login">Acceso</button></li>
+                    <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#register">Registro</button></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="login">
+                        <form>
+                            <input type="email" class="form-control mb-2" placeholder="Email institucional">
+                            <input type="password" class="form-control mb-3" placeholder="Contraseña">
+                            <button class="btn btn-primary w-100">Entrar</button>
+                        </form>
+                    </div>
+                    <div class="tab-pane fade" id="register">
+                        <form>
+                            <input type="text" class="form-control mb-2" placeholder="Nombre completo">
+                            <input type="email" class="form-control mb-2" placeholder="Email @mde.es">
+                            <input type="password" class="form-control mb-3" placeholder="Contraseña">
+                            <button class="btn btn-success w-100">Registrar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

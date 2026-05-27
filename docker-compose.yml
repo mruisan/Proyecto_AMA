@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  # --- BASE DE DATOS MONGODB ---
+  mongodb:
+    image: mongo:latest
+    container_name: ama_mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo_data:/data/db
+
+  # --- APLICACIÓN PYTHON FLASK ---
+  backend:
+    build: .
+    container_name: ama_flask_app
+    restart: always
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+    environment:
+      # Sobrescribimos el MONGO_URI de tu config.py para que apunte al contenedor 'mongodb'
+      - MONGO_URI=mongodb://mongodb:27017/ama_db
+      # Puedes definir una clave secreta personalizada para producción aquí
+      - SECRET_KEY=clave_secreta_produccion_armada_2026

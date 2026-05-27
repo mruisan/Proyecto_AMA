@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block title %}Planes y Ocio - AMA{% endblock %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-md-8 text-center text-md-start">
+        <h2 class="fw-bold text-dark"><i class="bi bi-calendar2-week text-warning me-2"></i>Actividades y Ocio</h2>
+        <p class="text-secondary mb-0">Propón planes, eventos deportivos, quedadas o comparte sugerencias de ocio con otros compañeros.</p>
+    </div>
+    <div class="col-md-4 text-center text-md-end mt-3 mt-md-0">
+        <a href="{{ url_for('ocio.crear_plan') }}" class="btn btn-warning fw-bold text-dark shadow-sm">
+            <i class="bi bi-calendar-plus me-1"></i> Proponer Plan
+        </a>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm border-0 bg-white rounded-3">
+            <div class="card-body p-4">
+                <h6 class="fw-bold text-secondary mb-3"><i class="bi bi-sliders me-2 text-warning"></i>Criterios de búsqueda (Opcionales)</h6>
+                
+                <form action="{{ url_for('ocio.listar_planes') }}" method="GET" class="row g-3">
+                    <div class="col-md-2">
+                        <label class="form-label small fw-semibold text-muted">Categoría</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="bi bi-tag"></i></span>
+                            <select name="categoria" class="form-select bg-light">
+                                <option value="">Todas</option>
+                                <option value="Deportes" {% if categoria == 'Deportes' %}selected{% endif %}>Deportes</option>
+                                <option value="Cultura" {% if categoria == 'Cultura' %}selected{% endif %}>Cultura</option>
+                                <option value="Gastronomía" {% if categoria == 'Gastronomía' %}selected{% endif %}>Gastronomía</option>
+                                <option value="Viajes" {% if categoria == 'Viajes' %}selected{% endif %}>Viajes</option>
+                                <option value="Quedadas" {% if categoria == 'Quedadas' %}selected{% endif %}>Quedadas</option>
+                                <option value="Otros" {% if categoria == 'Otros' %}selected{% endif %}>Otros</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-2">
+                        <label class="form-label small fw-semibold text-muted">Fecha Desde</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="bi bi-calendar-date"></i></span>
+                            <input type="date" name="fecha_desde" class="form-control bg-light" value="{{ fecha_desde if fecha_desde else '' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-2">
+                        <label class="form-label small fw-semibold text-muted">Fecha Hasta</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="bi bi-calendar-check"></i></span>
+                            <input type="date" name="fecha_hasta" class="form-control bg-light" value="{{ fecha_hasta if fecha_hasta else '' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-2">
+                        <label class="form-label small fw-semibold text-muted">Lugar / Población</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="bi bi-geo-alt"></i></span>
+                            <input type="text" name="lugar" class="form-control bg-light" placeholder="Ej: Rota, Cádiz" value="{{ lugar if lugar else '' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <label class="form-label small fw-semibold text-muted">¿Qué plan buscas?</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                            <input type="text" name="que_plan" class="form-control bg-light border-start-0" placeholder="Ej: fútbol, cena, concierto..." value="{{ que_plan if que_plan else '' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-1 d-flex align-items-end gap-1">
+                        <button type="submit" class="btn btn-dark w-100 fw-bold" title="Aplicar filtros">Filtrar</button>
+                        {% if ha_filtrado %}
+                            <a href="{{ url_for('ocio.listar_planes') }}" class="btn btn-outline-secondary" title="Limpiar filtros">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    {% if planes %}
+        {% for plan in planes %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm border-0 position-relative bg-white">
+                <span class="position-absolute top-0 end-0 m-3 badge bg-warning text-dark text-uppercase">
+                    {{ plan.categoria }}
+                </span>
+                
+                <div class="card-body p-4 pt-5 d-flex flex-column">
+                    <h5 class="card-title fw-bold text-dark mb-2">{{ plan.titulo }}</h5>
+                    
+                    {% if plan.fecha %}
+                    <p class="text-muted small mb-2">
+                        <i class="bi bi-clock-history text-warning me-1"></i><strong>Fecha/Hora:</strong> {{ plan.fecha | replace('T', ' ') }}
+                    </p>
+                    {% endif %}
+                    
+                    {% if plan.lugar %}
+                    <p class="text-muted small mb-3">
+                        <i class="bi bi-geo-alt-fill text-danger me-1"></i><strong>Lugar:</strong> {{ plan.lugar }}
+                    </p>
+                    {% endif %}
+                    
+                    <p class="card-text text-secondary small flex-grow-1" style="white-space: pre-line;">{{ plan.descripcion }}</p>
+                    
+                    {% if session.usuario and (session.usuario.usuario == plan.creador_usuario or session.usuario.rol == 'admin') %}
+                    <div class="d-flex gap-2 mb-2 mt-3">
+                        <a href="#" class="btn btn-sm btn-outline-secondary w-50 py-1 small"><i class="bi bi-pencil-square me-1"></i>Editar</a>
+                        
+                        <form action="{{ url_for('ocio.eliminar_plan', plan_id=plan._id) }}" method="POST" class="w-50 m-0" onsubmit="return confirm('¿Seguro que deseas eliminar esta propuesta de plan?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger w-100 py-1 small">
+                                <i class="bi bi-trash3 me-1"></i>Eliminar
+                            </button>
+                        </form>
+                    </div>
+                    {% endif %}
+                    
+                    <hr class="text-muted my-3">
+                    
+                    <div class="d-flex justify-content-between align-items-center bg-light p-2 rounded-3 small">
+                        <span class="text-muted"><i class="bi bi-person-circle me-1"></i>Organiza: <strong>{{ plan.creador_usuario }}</strong></span>
+                        
+                        {% if plan.contacto %}
+                            {% if session.usuario %}
+                            <span class="text-dark fw-semibold"><i class="bi bi-chat-dots text-warning me-1"></i>{{ plan.contacto }}</span>
+                            {% else %}
+                            <span class="text-muted fst-italic" title="Inicia sesión para ver los datos de contacto">
+                                <i class="bi bi-lock-fill text-secondary me-1"></i>Contacto oculto
+                            </span>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="text-center py-5 bg-white rounded-3 shadow-sm border border-dashed">
+                {% if ha_filtrado %}
+                    <i class="bi bi-calendar-x text-muted display-1 mb-3"></i>
+                    <h4 class="fw-bold text-secondary">No se encontraron actividades</h4>
+                    <p class="text-muted px-3">Prueba a modificar las fechas, cambiar la ubicación o flexibilizar los términos de búsqueda.</p>
+                    <a href="{{ url_for('ocio.listar_planes') }}" class="btn btn-warning btn-sm fw-bold text-dark mt-2">
+                        Restablecer filtros
+                    </a>
+                {% else %}
+                    <i class="bi bi-emoji-smile text-muted display-1 mb-3"></i>
+                    <h4 class="fw-bold text-secondary">No hay actividades programadas</h4>
+                    <p class="text-muted px-3">¿Te apetece organizar un torneo de fútbol, una ruta de senderismo o una cena? ¡Propón el plan!</p>
+                    <a href="{{ url_for('ocio.crear_plan') }}" class="btn btn-warning btn-sm fw-bold text-dark mt-2">
+                        Proponer el primer plan
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

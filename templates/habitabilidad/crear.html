@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Ofrecer Alojamiento - AMA{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="mb-3">
+            <a href="{{ url_for('habitabilidad.listar_inmuebles') }}" class="text-decoration-none text-secondary small fw-semibold">
+                <i class="bi bi-arrow-left me-1"></i> Volver al panel de alojamiento
+            </a>
+        </div>
+
+        <div class="card shadow border-0 rounded-3">
+            <div class="card-header bg-primary text-white p-4">
+                <h4 class="mb-0 fw-bold"><i class="bi bi-house-add-fill me-2"></i>Ofrecer Solución de Alojamiento</h4>
+                <p class="mb-0 text-white-50 small mt-1">El anuncio se registrará bajo la identidad del usuario: <strong>{{ session.usuario.usuario }}</strong></p>
+            </div>
+            
+            <div class="card-body p-4">
+                <form action="{{ url_for('habitabilidad.crear_inmueble') }}" method="POST" enctype="multipart/form-data">
+                    
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="tipo_vivienda" class="form-label text-secondary fw-semibold">Tipo de Oferta</label>
+                            <select class="form-select" id="tipo_vivienda" name="tipo_vivienda" required>
+                                <option value="Piso Completo" selected>Piso Completo / Casa</option>
+                                <option value="Habitación">Habitación en piso compartido</option>
+                                <option value="Permuta">Permuta por cambio de destino</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="precio" class="form-label text-secondary fw-semibold">Precio Mensual (€)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light">€</span>
+                                <input type="number" class="form-control" id="precio" name="precio" min="0" placeholder="Ej: 450" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-8">
+                            <label for="ubicacion" class="form-label text-secondary fw-semibold">Ubicación / Zona</label>
+                            <input type="text" class="form-control" id="ubicacion" name="ubicacion" required 
+                                   placeholder="Ej: C/ Real (San Fernando), junto a la Base Naval">
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="habitaciones" class="form-label text-secondary fw-semibold">Nº Habitaciones</label>
+                            <input type="number" class="form-control" id="habitaciones" name="habitaciones" min="1" max="10" value="1" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="titulo" class="form-label text-secondary fw-semibold">Título del Anuncio</label>
+                        <input type="text" class="form-control" id="titulo" name="titulo" required 
+                               placeholder="Ej: Piso luminoso ideal para comisiones o cursos breves">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="imagen" class="form-label text-secondary fw-semibold">Imagen principal del inmueble</label>
+                        <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*" required>
+                        <small class="text-muted">Selecciona una fotografía llamativa para tu anuncio.</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label text-secondary fw-semibold">Descripción del alojamiento</label>
+                        <textarea class="form-control" id="descripcion" name="descripcion" rows="4" required
+                                  placeholder="Describe las características de la vivienda (wifi, plaza de garaje, distancia a la base, si se admiten mascotas, etc.)..."></textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="contacto" class="form-label text-secondary fw-semibold">Datos de contacto (Opcional)</label>
+                        <input type="text" class="form-control" id="contacto" name="contacto" placeholder="Ej: WhatsApp 600XXXXXX o extensión corporativa">
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end border-top pt-3">
+                        <a href="{{ url_for('habitabilidad.listar_inmuebles') }}" class="btn btn-light px-4">Cancelar</a>
+                        <button type="submit" class="btn btn-primary px-5 fw-bold text-white">Publicar Alojamiento</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
