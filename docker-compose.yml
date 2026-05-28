@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # --- BASE DE DATOS MONGODB ---
   mongodb:
-    image: mongo:latest
+    image: mongo:4.4
     container_name: ama_mongodb
     restart: always
     ports:
