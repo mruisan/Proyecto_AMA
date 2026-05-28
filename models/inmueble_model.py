@@ -1,9 +1,10 @@
 # models/inmueble_model.py
+
 from datetime import datetime
 
 class Inmueble:
-    def __init__(self, propietario_tip, titulo, descripcion, ubicacion, precio, tipo, plazas=1):
-        self.propietario_tip = propietario_tip  # Quién lo publica (usuario)
+    def __init__(self, propietario, titulo, descripcion, ubicacion, precio, tipo, plazas=1):
+        self.propietario = propietario  	# Quién lo publica (usuario)
         self.titulo = titulo
         self.descripcion = descripcion
         self.ubicacion = ubicacion              
@@ -14,7 +15,7 @@ class Inmueble:
 
     def to_dict(self):
         return {
-            "propietario_tip": self.propietario_tip,
+            "propietario": self.propietario,
             "titulo": self.titulo,
             "descripcion": self.descripcion,
             "ubicacion": self.ubicacion,

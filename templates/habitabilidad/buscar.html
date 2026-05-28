@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Soluciones Habitacionales - AMA{% endblock %}
+{% block title %}Soluciones Habitacionales - FAMA{% endblock %}
 
 {% block content %}
 <div class="row mb-4 align-items-center">
@@ -19,7 +19,7 @@
     <div class="col-12">
         <div class="card shadow-sm border-0 bg-white rounded-3">
             <div class="card-body p-4">
-                <h6 class="fw-bold text-secondary mb-3"><i class="bi bi-sliders me-2 text-primary"></i>Criterios de búsqueda (Opcionales)</h6>
+                <h6 class="fw-bold text-secondary mb-3"><i class="bi bi-sliders me-2 text-primary"></i>Filtrar anuncios</h6>
                 
                 <form action="{{ url_for('habitabilidad.listar_inmuebles') }}" method="GET" class="row g-3">
                     <div class="col-md-4">
@@ -31,7 +31,7 @@
                     </div>
                     
                     <div class="col-md-4">
-                        <label class="form-label small fw-semibold text-muted">Precio %Mínimo (€/mes)</label>
+                        <label class="form-label small fw-semibold text-muted">Precio Máximo (€/mes)</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-currency-euro"></i></span>
                             <input type="number" name="precio_max" class="form-control bg-light border-start-0" placeholder="Ej: 600" value="{{ precio_max if precio_max else '' }}">
@@ -64,9 +64,11 @@
     {% if inmuebles %}
         {% for inmueble in inmuebles %}
         <div class="col-md-6 col-lg-4">
-            <div class="card h-100 shadow-sm border-0 position-relative">
-                <img src="{{ url_for('static', filename=inmueble.imagen if inmueble.imagen else 'img/default_house.jpg') }}" 
-                     class="card-img-top" style="height: 200px; object-fit: cover;" alt="Imagen de {{ inmueble.titulo }}">
+            <div class="card card-modern h-100 shadow-sm border-0 position-relative">
+                <div style="overflow: hidden; height: 200px;">
+                    <img src="{{ url_for('static', filename=inmueble.imagen if inmueble.imagen else 'img/default_house.jpg') }}" 
+                         class="card-img-top" style="height: 100%; object-fit: cover;" alt="Imagen de {{ inmueble.titulo }}">
+                </div>
                 
                 <span class="position-absolute top-0 end-0 m-3 badge {% if inmueble.tipo_vivienda == 'Habitación' %}bg-info text-dark{% else %}bg-success{% endif %} text-uppercase">
                     {{ inmueble.tipo_vivienda }}
@@ -78,13 +80,15 @@
                     </h5>
                     <p class="text-muted small mb-3"><i class="bi bi-geo-alt-fill text-danger me-1"></i>{{ inmueble.ubicacion }}</p>
                     
-                    <p class="card-text text-secondary text-clamp mb-4" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                    <p class="card-text text-secondary text-clamp mb-4">
                         {{ inmueble.descripcion }}
                     </p>
                     
                     {% if session.usuario and (session.usuario.usuario == inmueble.propietario_usuario or session.usuario.rol == 'admin') %}
                     <div class="d-flex gap-2 mb-3 mt-2">
-                        <a href="#" class="btn btn-sm btn-outline-secondary w-50 py-1 small"><i class="bi bi-pencil-square me-1"></i>Editar</a>
+                        <a href="{{ url_for('habitabilidad.editar_inmueble', inmueble_id=inmueble._id) }}" class="btn btn-sm btn-outline-secondary w-50 py-1 small">
+                            <i class="bi bi-pencil-square me-1"></i>Editar
+                        </a>
                         <form action="{{ url_for('habitabilidad.eliminar_inmueble', inmueble_id=inmueble._id) }}" method="POST" class="w-50 m-0" onsubmit="return confirm('¿Seguro que deseas eliminar este alojamiento?');">
                             <button type="submit" class="btn btn-sm btn-outline-danger w-100 py-1 small">
                                 <i class="bi bi-trash3 me-1"></i>Eliminar

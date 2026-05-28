@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Anuncio - FAMA{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="mb-3">
+            <a href="{{ url_for('servicios.listar_servicios') }}" class="text-decoration-none text-secondary small fw-semibold">
+                <i class="bi bi-arrow-left me-1"></i> Volver al tablón colaborativo
+            </a>
+        </div>
+
+        <div class="card card-modern shadow-lg border-0 rounded-3">
+            <div class="card-header bg-success text-white p-4 border-0">
+                <h4 class="mb-0 fw-bold"><i class="bi bi-pencil-square me-2"></i>Editar Anuncio</h4>
+                <p class="mb-0 text-white-50 small mt-1">Modifica los detalles de tu anuncio en la Red de Servicios.</p>
+            </div>
+            
+            <div class="card-body p-4">
+                <form action="{{ url_for('servicios.editar_servicio', servicio_id=servicio._id) }}" method="POST">
+                    
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="tipo" class="form-label text-secondary fw-semibold">¿Qué necesitas hacer?</label>
+                            <select class="form-select bg-light" id="tipo" name="tipo" required>
+                                <option value="OFRECE" {% if servicio.tipo == 'OFRECE' %}selected{% endif %}>Ofrecer un servicio / ayuda / plazas</option>
+                                <option value="SOLICITA" {% if servicio.tipo == 'SOLICITA' %}selected{% endif %}>Solicitar un servicio / ayuda / transporte</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="categoria" class="form-label text-secondary fw-semibold">Categoría del Servicio</label>
+                            <select class="form-select bg-light" id="categoria" name="categoria" required>
+                                <option value="Movilidad/Coche" {% if servicio.categoria == 'Movilidad/Coche' %}selected{% endif %}>Movilidad y Compartir Coche (Rutas)</option>
+                                <option value="Informática" {% if servicio.categoria == 'Informática' %}selected{% endif %}>Informática y Conectividad</option>
+                                <option value="Mecánica" {% if servicio.categoria == 'Mecánica' %}selected{% endif %}>Mecánica y Automoción</option>
+                                <option value="Administrativo" {% if servicio.categoria == 'Administrativo' %}selected{% endif %}>Trámites y Soporte Administrativo</option>
+                                <option value="Idiomas/Clases" {% if servicio.categoria == 'Idiomas/Clases' %}selected{% endif %}>Idiomas, Clases y Formación</option>
+                                <option value="Otros" {% if servicio.categoria == 'Otros' %}selected{% endif %}>Otras Colaboraciones</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="seccion-viaje" class="bg-light p-3 rounded-3 mb-3 border" style="display: none;">
+                        <h6 class="fw-bold text-success mb-3"><i class="bi bi-pin-map-fill me-1"></i>Datos específicos del trayecto</h6>
+                        <div class="row g-3">
+                            <div class="col-md-5">
+                                <label for="origen" class="form-label small text-secondary fw-semibold">Punto de Origen</label>
+                                <input type="text" class="form-control form-control-sm bg-white" id="origen" name="origen" value="{{ servicio.origen if servicio.origen else '' }}" placeholder="Ej: Base Naval de Rota">
+                            </div>
+                            <div class="col-md-5">
+                                <label for="destino" class="form-label small text-secondary fw-semibold">Punto de Destino</label>
+                                <input type="text" class="form-control form-control-sm bg-white" id="destino" name="destino" value="{{ servicio.destino if servicio.destino else '' }}" placeholder="Ej: Arsenal de Ferrol">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="plazas" class="form-label small text-secondary fw-semibold">Plazas</label>
+                                <input type="number" class="form-control form-control-sm bg-white" id="plazas" name="plazas" value="{{ servicio.plazas if servicio.plazas else 3 }}" min="1" max="8">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="titulo" class="form-label text-secondary fw-semibold">Título del Anuncio</label>
+                        <input type="text" class="form-control bg-light" id="titulo" name="titulo" value="{{ servicio.titulo }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label text-secondary fw-semibold">Descripción detallada</label>
+                        <textarea class="form-control bg-light" id="descripcion" name="descripcion" rows="4" required>{{ servicio.descripcion }}</textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="contacto" class="form-label text-secondary fw-semibold">Datos de contacto (Opcional)</label>
+                        <input type="text" class="form-control bg-light" id="contacto" name="contacto" value="{{ servicio.contacto if servicio.contacto else '' }}" placeholder="Ej: Extensión interna 4231 o Tel: 600XXXXXX">
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end border-top pt-3">
+                        <a href="{{ url_for('servicios.listar_servicios') }}" class="btn btn-outline-secondary px-4 fw-bold">Cancelar</a>
+                        <button type="submit" class="btn btn-success px-5 fw-bold text-white">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const selectCategoria = document.getElementById('categoria');
+    const seccionViaje = document.getElementById('seccion-viaje');
+    const inputOrigen = document.getElementById('origen');
+    const inputDestino = document.getElementById('destino');
+
+    function alternarCampos() {
+        if (selectCategoria.value === 'Movilidad/Coche') {
+            seccionViaje.style.display = 'block';
+            inputOrigen.required = true;
+            inputDestino.required = true;
+        } else {
+            seccionViaje.style.display = 'none';
+            inputOrigen.required = false;
+            inputDestino.required = false;
+        }
+    }
+
+    selectCategoria.addEventListener('change', alternarCampos);
+    // Ejecutar al cargar para mostrar/ocultar según el valor inicial
+    alternarCampos();
+</script>
+{% endblock %}

@@ -1,4 +1,5 @@
 # routes/administracion_routes.py
+
 from flask import Blueprint, render_template, redirect, url_for, flash, session, make_response, request
 from extensions import mongo
 from datetime import datetime
@@ -15,9 +16,11 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 # 1. DECLARACIÓN DEL BLUEPRINT 
 admin_bp = Blueprint('admin', __name__, url_prefix='/administracion')
 
+
 # ========================================================
-# VISTAS DE AUDITORÍA
+# AUDITORÍA
 # ========================================================
+
 @admin_bp.route('/auditoria')
 def ver_logs():
     if 'usuario' not in session or session['usuario'].get('rol') != 'admin':
@@ -41,10 +44,10 @@ def exportar_pdf():
     table_data = [["Fecha (UTC)", "Acción", "Usuario", "Descripción", "IP Origen"]]
     for log in lista_logs:
         table_data.append([
-            log.get('fecha', '').strftime('%d/%m/%Y %H:%M:%S'),
+            log.get('fecha', '').strftime('%d/%m/%Y %H:%M:%S') if isinstance(log.get('fecha'), datetime) else '',
             str(log.get('accion', '')),
             str(log.get('usuario', '')),
-            str(log.get('descripcion', '')),
+            str(log.get('descripcion', log.get('detalles', ''))),
             str(log.get('ip_origen', ''))
         ])
     log_table = Table(table_data, colWidths=[120, 110, 85, 315, 102])
@@ -58,19 +61,23 @@ def exportar_pdf():
     response.headers['Content-Type'] = 'application/pdf'
     return response
 
+
 # ========================================================
-# VISTAS DE GESTIÓN DE USUARIOS
+# GESTIÓN DE USUARIOS
 # ========================================================
+
 @admin_bp.route('/usuarios')
 def gestionar_usuarios():
     if 'usuario' not in session or session['usuario'].get('rol') != 'admin':
-        return redirect(url_for('panel.dashboard'))
+        return redirect(url_for('auth.login'))
     lista_usuarios = list(mongo.db.usuarios.find().sort("usuario", 1))
     return render_template('administracion.html', usuarios=lista_usuarios, seccion='usuarios')
 
+
 # ========================================================
-# ACCIONES DE GESTIÓN (CRUD)
+# ACCIONES DE GESTIÓN (CRUD) Y LIMPIEZA
 # ========================================================
+
 @admin_bp.route('/usuarios/cambiar_rol/<id_usuario>', methods=['POST'])
 def cambiar_rol(id_usuario):
     nuevo_rol = request.form.get('nuevo_rol')
@@ -135,3 +142,16 @@ def eliminar_usuario(id_usuario):
         mongo.db.usuarios.delete_one({"_id": ObjectId(id_usuario)})
         flash(f"Usuario {usuario['usuario']} eliminado.", "danger")
     return redirect(url_for('admin.gestionar_usuarios'))
+
+@admin_bp.route('/limpiar-logs', methods=['POST'])
+def ejecutar_limpieza():
+    if session.get('usuario', {}).get('rol') != 'admin':
+        return "Acceso denegado", 403
+    
+    from scripts.limpieza_logs import limpiar_logs_antiguos
+    cantidad = limpiar_logs_antiguos()
+    flash(f"Limpieza realizada con éxito. Se eliminaron {cantidad} registros antiguos.", "success")
+    # Redirigimos a la vista de auditoría, que es donde está el contexto de logs
+    return redirect(url_for('admin.ver_logs'))
+
+

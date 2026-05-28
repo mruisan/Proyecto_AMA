@@ -1,4 +1,5 @@
 # routes/auth_routes.py
+
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from extensions import mongo
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -99,3 +100,4 @@ def logout():
     session.clear()
     flash("Sesión cerrada.", "info")
     return redirect(url_for('auth.login'))
+

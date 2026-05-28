@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Módulo de Compraventa - AMA{% endblock %}
+{% block title %}Módulo de Compraventa - FAMA{% endblock %}
 
 {% block content %}
 <div class="row mb-4 align-items-center">
@@ -19,7 +19,7 @@
     <div class="col-12">
         <div class="card shadow-sm border-0 bg-white rounded-3">
             <div class="card-body p-4">
-                <h6 class="fw-bold text-secondary mb-3"><i class="bi bi-sliders me-2 text-info"></i>Criterios de búsqueda (Opcionales)</h6>
+                <h6 class="fw-bold text-secondary mb-3"><i class="bi bi-sliders me-2 text-info"></i>Filtrar anuncios</h6>
                 
                 <form action="{{ url_for('mercado.listar_material') }}" method="GET" class="row g-3">
                     <div class="col-md-3">
@@ -72,7 +72,7 @@
     {% if articulos %}
         {% for articulo in articulos %}
         <div class="col-md-6 col-lg-4">
-            <div class="card h-100 shadow-sm border-0 bg-white">
+            <div class="card card-modern h-100 shadow-sm border-0 bg-white">
                 
                 <div class="card-header bg-transparent border-0 pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
                     <span class="badge bg-info-subtle text-info border text-uppercase font-monospace small">
@@ -93,8 +93,9 @@
                     
                     {% if session.usuario and (session.usuario.usuario == articulo.propietario_usuario or session.usuario.rol == 'admin') %}
                     <div class="d-flex gap-2 my-2">
-                        <a href="#" class="btn btn-sm btn-outline-secondary w-50 py-1 small"><i class="bi bi-pencil-square me-1"></i>Editar</a>
-                        
+                        <a href="{{ url_for('mercado.editar_articulo', articulo_id=articulo._id) }}" class="btn btn-sm btn-outline-secondary w-50 py-1 small">
+                            <i class="bi bi-pencil-square me-1"></i>Editar
+                        </a>
                         <form action="{{ url_for('mercado.eliminar_articulo', articulo_id=articulo._id) }}" method="POST" class="w-50 m-0" onsubmit="return confirm('¿Seguro que deseas eliminar este anuncio?');">
                             <button type="submit" class="btn btn-sm btn-outline-danger w-100 py-1 small">
                                 <i class="bi bi-trash3 me-1"></i>Eliminar
@@ -123,7 +124,6 @@
                         {% endif %}
                     </div>
                 </div>
-
             </div>
         </div>
         {% endfor %}
@@ -134,9 +134,7 @@
                 {% if ha_filtrado %}
                     <h4 class="fw-bold text-secondary">Ningún artículo coincide con la búsqueda</h4>
                     <p class="text-muted px-3">Prueba a cambiar de categoría, subir el precio máximo o flexibilizar tus palabras clave.</p>
-                    <a href="{{ url_for('mercado.listar_material') }}" class="btn btn-info btn-sm text-white fw-bold mt-2">
-                        Restablecer filtros
-                    </a>
+                    <a href="{{ url_for('mercado.listar_material') }}" class="btn btn-info btn-sm text-white fw-bold mt-2">Restablecer filtros</a>
                 {% else %}
                     <h4 class="fw-bold text-secondary">No hay artículos a la venta</h4>
                     <p class="text-muted px-3">Sé el primero en vaciar el pañol y poner a la venta o donar aquello que ya no utilizas.</p>

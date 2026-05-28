@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Planes y Ocio - AMA{% endblock %}
+{% block title %}Planes y Ocio - FAMA{% endblock %}
 
 {% block content %}
 <div class="row mb-4 align-items-center">
@@ -19,7 +19,7 @@
     <div class="col-12">
         <div class="card shadow-sm border-0 bg-white rounded-3">
             <div class="card-body p-4">
-                <h6 class="fw-bold text-secondary mb-3"><i class="bi bi-sliders me-2 text-warning"></i>Criterios de búsqueda (Opcionales)</h6>
+                <h6 class="fw-bold text-secondary mb-3"><i class="bi bi-sliders me-2 text-warning"></i>Filtrar anuncios</h6>
                 
                 <form action="{{ url_for('ocio.listar_planes') }}" method="GET" class="row g-3">
                     <div class="col-md-2">
@@ -55,10 +55,10 @@
                     </div>
                     
                     <div class="col-md-2">
-                        <label class="form-label small fw-semibold text-muted">Lugar / Población</label>
+                        <label class="form-label small fw-semibold text-muted">Lugar</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light text-muted"><i class="bi bi-geo-alt"></i></span>
-                            <input type="text" name="lugar" class="form-control bg-light" placeholder="Ej: Rota, Cádiz" value="{{ lugar if lugar else '' }}">
+                            <input type="text" name="lugar" class="form-control bg-light" placeholder="Ej: Rota" value="{{ lugar if lugar else '' }}">
                         </div>
                     </div>
                     
@@ -66,7 +66,7 @@
                         <label class="form-label small fw-semibold text-muted">¿Qué plan buscas?</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                            <input type="text" name="que_plan" class="form-control bg-light border-start-0" placeholder="Ej: fútbol, cena, concierto..." value="{{ que_plan if que_plan else '' }}">
+                            <input type="text" name="que_plan" class="form-control bg-light border-start-0" placeholder="Ej: fútbol, cena..." value="{{ que_plan if que_plan else '' }}">
                         </div>
                     </div>
                     
@@ -88,7 +88,7 @@
     {% if planes %}
         {% for plan in planes %}
         <div class="col-md-6 col-lg-4">
-            <div class="card h-100 shadow-sm border-0 position-relative bg-white">
+            <div class="card card-modern h-100 shadow-sm border-0 position-relative bg-white">
                 <span class="position-absolute top-0 end-0 m-3 badge bg-warning text-dark text-uppercase">
                     {{ plan.categoria }}
                 </span>
@@ -112,9 +112,10 @@
                     
                     {% if session.usuario and (session.usuario.usuario == plan.creador_usuario or session.usuario.rol == 'admin') %}
                     <div class="d-flex gap-2 mb-2 mt-3">
-                        <a href="#" class="btn btn-sm btn-outline-secondary w-50 py-1 small"><i class="bi bi-pencil-square me-1"></i>Editar</a>
-                        
-                        <form action="{{ url_for('ocio.eliminar_plan', plan_id=plan._id) }}" method="POST" class="w-50 m-0" onsubmit="return confirm('¿Seguro que deseas eliminar esta propuesta de plan?');">
+                        <a href="{{ url_for('ocio.editar_plan', plan_id=plan._id) }}" class="btn btn-sm btn-outline-secondary w-50 py-1 small">
+                            <i class="bi bi-pencil-square me-1"></i>Editar
+                        </a>
+                        <form action="{{ url_for('ocio.eliminar_plan', plan_id=plan._id) }}" method="POST" class="w-50 m-0" onsubmit="return confirm('¿Seguro que deseas eliminar este plan?');">
                             <button type="submit" class="btn btn-sm btn-outline-danger w-100 py-1 small">
                                 <i class="bi bi-trash3 me-1"></i>Eliminar
                             </button>
@@ -147,17 +148,13 @@
                 {% if ha_filtrado %}
                     <i class="bi bi-calendar-x text-muted display-1 mb-3"></i>
                     <h4 class="fw-bold text-secondary">No se encontraron actividades</h4>
-                    <p class="text-muted px-3">Prueba a modificar las fechas, cambiar la ubicación o flexibilizar los términos de búsqueda.</p>
-                    <a href="{{ url_for('ocio.listar_planes') }}" class="btn btn-warning btn-sm fw-bold text-dark mt-2">
-                        Restablecer filtros
-                    </a>
+                    <p class="text-muted px-3">Prueba a modificar las fechas o criterios de búsqueda.</p>
+                    <a href="{{ url_for('ocio.listar_planes') }}" class="btn btn-warning btn-sm fw-bold text-dark mt-2">Restablecer filtros</a>
                 {% else %}
                     <i class="bi bi-emoji-smile text-muted display-1 mb-3"></i>
                     <h4 class="fw-bold text-secondary">No hay actividades programadas</h4>
-                    <p class="text-muted px-3">¿Te apetece organizar un torneo de fútbol, una ruta de senderismo o una cena? ¡Propón el plan!</p>
-                    <a href="{{ url_for('ocio.crear_plan') }}" class="btn btn-warning btn-sm fw-bold text-dark mt-2">
-                        Proponer el primer plan
-                    </a>
+                    <p class="text-muted px-3">¿Te apetece organizar un plan? ¡Sé el primero en proponerlo!</p>
+                    <a href="{{ url_for('ocio.crear_plan') }}" class="btn btn-warning btn-sm fw-bold text-dark mt-2">Proponer el primer plan</a>
                 {% endif %}
             </div>
         </div>

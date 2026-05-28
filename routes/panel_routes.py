@@ -1,4 +1,5 @@
 # routes/panel_routes.py
+
 from flask import Blueprint, render_template, session
 
 panel_bp = Blueprint('panel', __name__)

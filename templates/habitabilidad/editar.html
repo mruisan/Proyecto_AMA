@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Alojamiento - FAMA{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-dark text-white rounded-top-4 py-3">
+            <h4 class="mb-0 text-center"><i class="bi bi-pencil-square me-2"></i> Editar Anuncio</h4>
+        </div>
+        <div class="card-body p-4">
+            <form action="{{ url_for('habitabilidad.editar_inmueble', inmueble_id=inmueble._id) }}" method="POST" enctype="multipart/form-data">
+                
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="titulo" name="titulo" value="{{ inmueble.titulo }}" required>
+                            <label for="titulo">Título del anuncio</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select class="form-select" id="tipo_vivienda" name="tipo_vivienda">
+                                <option value="Piso" {% if inmueble.tipo_vivienda == 'Piso' %}selected{% endif %}>Piso</option>
+                                <option value="Casa" {% if inmueble.tipo_vivienda == 'Casa' %}selected{% endif %}>Casa</option>
+                                <option value="Habitación" {% if inmueble.tipo_vivienda == 'Habitación' %}selected{% endif %}>Habitación</option>
+                            </select>
+                            <label for="tipo_vivienda">Tipo de vivienda</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="number" class="form-control" id="precio" name="precio" value="{{ inmueble.precio }}" step="0.01" required>
+                            <label for="precio">Precio (€)</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="ubicacion" name="ubicacion" value="{{ inmueble.ubicacion }}" required>
+                            <label for="ubicacion">Ubicación</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="number" class="form-control" id="habitaciones" name="habitaciones" value="{{ inmueble.habitaciones }}" required>
+                            <label for="habitaciones">Número de habitaciones</label>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="form-floating">
+                            <textarea class="form-control" id="descripcion" name="descripcion" style="height: 100px" required>{{ inmueble.descripcion }}</textarea>
+                            <label for="descripcion">Descripción</label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="contacto" name="contacto" value="{{ inmueble.contacto }}" required>
+                            <label for="contacto">Contacto (Teléfono/Email)</label>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label text-muted small">Cambiar imagen (opcional)</label>
+                        <input type="file" class="form-control" name="imagen" accept="image/*">
+                        <p class="text-muted mt-1 small">Imagen actual: {{ inmueble.imagen }}</p>
+                    </div>
+
+                    <div class="col-12 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill">
+                            <i class="bi bi-save me-2"></i> Guardar Cambios
+                        </button>
+                        <a href="{{ url_for('habitabilidad.listar_inmuebles') }}" class="btn btn-outline-secondary btn-lg w-100 mt-2 rounded-pill">Cancelar</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

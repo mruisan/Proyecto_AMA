@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Registro de Usuario - AMA{% endblock %}
+{% block title %}Registro de Usuario - FAMA{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center my-5">
@@ -8,7 +8,7 @@
         <div class="card shadow border-0 rounded-3">
             <div class="card-header bg-dark text-white text-center py-4">
                 <h4 class="mb-0 fw-bold text-uppercase"><i class="bi bi-person-plus-fill me-2 text-primary"></i>Alta de Usuario</h4>
-                <p class="mb-0 text-muted small mt-1">Regístrese para acceder al ecosistema AMA</p>
+                <p class="mb-0 text-muted small mt-1">Regístrese para acceder al ecosistema FAMA</p>
             </div>
             <div class="card-body p-4">
                 <form action="{{ url_for('auth.registro') }}" method="POST">
@@ -16,8 +16,8 @@
                     <input type="hidden" name="rol" value="militar">
                     
                     <div class="mb-3">
-                        <label for="tip" class="form-label text-secondary fw-semibold">Usuario</label>
-                        <input type="text" class="form-control" id="tip" name="username" required placeholder="Ej: 12345678A">
+                        <label for="usuario" class="form-label text-secondary fw-semibold">Usuario</label>
+                        <input type="text" class="form-control" id="usuario" name="username" required placeholder="Ej: 12345678A">
                     </div>
 
                     <div class="row g-3 mb-3">

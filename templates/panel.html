@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Dashboard Principal - AMA{% endblock %}
+{% block title %}FAMA{% endblock %}
 
 {% block content %}
 <div id="carouselPrincipal" class="carousel slide carousel-fade position-fixed top-0 start-0 w-100 h-100" data-bs-ride="carousel" style="z-index: -1;">
@@ -23,10 +23,10 @@
         <div class="col-12 text-center text-md-start text-white">
             {% if session.usuario %}
                 <h2 class="fw-bold">Bienvenido, {{ session.usuario.nombre }}</h2>
-                <p>Selecciona el módulo operativo que necesites gestionar en el sistema AMA.</p>
+                <p>Selecciona el módulo operativo que necesites gestionar en el sistema FAMA.</p>
             {% else %}
                 <h2 class="fw-bold">Panel de Publicaciones Pública</h2>
-                <p>Bienvenido al sistema AMA. Explora libremente los tablones del personal de la Armada.</p>
+                <p>Bienvenido al sistema FAMA. Explora libremente los tablones del personal de la Armada.</p>
             {% endif %}
         </div>
     </div>

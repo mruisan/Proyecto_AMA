@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Panel de Administración - AMA{% endblock %}
+{% block title %}Panel de Administración - FAMA{% endblock %}
 
 {% block content %}
 <div class="row mb-4">
@@ -30,6 +30,12 @@
     <div class="card-header bg-dark text-white p-3 d-flex justify-content-between align-items-center">
         <h5 class="mb-0 fw-bold"><i class="bi bi-list-check me-2"></i>Logs de Actividad del Sistema</h5>
         <div class="d-flex gap-2">
+            <form action="{{ url_for('admin.ejecutar_limpieza') }}" method="POST" 
+                  onsubmit="return confirm('¿Confirmar limpieza de logs de más de 6 meses?');">
+                <button type="submit" class="btn btn-sm btn-outline-warning fw-bold shadow-sm">
+                    <i class="bi bi-trash me-1"></i> Limpiar Antiguos
+                </button>
+            </form>
             <a href="{{ url_for('admin.exportar_pdf') }}" class="btn btn-sm btn-danger fw-bold shadow-sm">
                 <i class="bi bi-file-earmark-pdf me-1"></i> Exportar a PDF
             </a>
@@ -57,7 +63,7 @@
                                 {{ log.accion }}
                             </span>
                         </td>
-                        <td class="fw-bold text-dark">{{ log.usuario_tip or log.usuario }}</td>
+                        <td class="fw-bold text-dark">{{ log.usuario }}</td>
                         <td class="text-secondary text-wrap">{{ log.descripcion }}</td>
                         <td class="pe-4 text-muted font-monospace"><i class="bi bi-laptop me-1"></i>{{ log.ip_origen }}</td>
                     </tr>
@@ -91,16 +97,14 @@
                     {% for user in usuarios %}
                     <tr class="{% if user.activo == False %}table-light text-muted{% endif %}">
                         <td class="ps-4 fw-bold text-dark">{{ user.usuario }}</td>
-                        
                         <td>
                             <form action="{{ url_for('admin.cambiar_rol', id_usuario=user._id) }}" method="POST">
                                 <select name="nuevo_rol" class="form-select form-select-sm" onchange="this.form.submit()">
-                                    <option value="militar" {% if user.rol == 'militar' %}selected{% endif %}>Militar</option>
+                                    <option value="militar" {% if user.rol == 'militar' %}selected{% endif %}>Usuario</option>
                                     <option value="admin" {% if user.rol == 'admin' %}selected{% endif %}>Administrador</option>
                                 </select>
                             </form>
                         </td>
-
                         <td>
                             <form action="{{ url_for('admin.alternar_estado', id_usuario=user._id) }}" method="POST">
                                 <button type="submit" class="btn btn-sm {% if user.activo == False %}btn-danger{% else %}btn-success{% endif %} w-100">
@@ -108,7 +112,6 @@
                                 </button>
                             </form>
                         </td>
-
                         <td class="text-end pe-4">
                             <div class="dropdown">
                                 <button class="btn btn-sm btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">Gestionar</button>
@@ -169,7 +172,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <input type="text" name="usuario" class="form-control mb-2" placeholder="TIP (Identificador)" required>
+                <input type="text" name="usuario" class="form-control mb-2" placeholder="Usuario (Dicodef)" required>
                 <input type="text" name="nombre" class="form-control mb-2" placeholder="Nombre">
                 <input type="text" name="apellidos" class="form-control mb-2" placeholder="Apellidos">
                 <input type="email" name="correo" class="form-control mb-2" placeholder="Correo electrónico">

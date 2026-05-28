@@ -1,4 +1,5 @@
 # routes/servicios_routes.py
+
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from extensions import mongo
 from bson.objectid import ObjectId
@@ -8,7 +9,7 @@ servicios_bp = Blueprint('servicios', __name__, url_prefix='/servicios')
 
 @servicios_bp.route('/')
 def listar_servicios():
-    # RUTA LIBERADA: Se elimina la restricción obligatoria de inicio de sesión.
+    # RUTA LIBERADA: página visible sin registro.
     # Cualquier visitante puede visualizar y buscar los anuncios de colaboración.
     
     # 1. Capturamos los criterios independientes del formulario avanzado
@@ -91,7 +92,7 @@ def crear_servicio():
 
 @servicios_bp.route('/eliminar/<string:servicio_id>', methods=['POST'])
 def eliminar_servicio(servicio_id):
-    # RUTA PROTEGIDA: Requiere inicio de sesión absoluto para la retirada de elementos
+    # RUTA PROTEGIDA: Requiere inicio de sesión para la retirada de elementos
     if 'usuario' not in session:
         return redirect(url_for('auth.login'))
     
@@ -113,3 +114,56 @@ def eliminar_servicio(servicio_id):
         flash("No tiene autorización para eliminar este anuncio.", "danger")
         
     return redirect(url_for('servicios.listar_servicios'))
+
+
+@servicios_bp.route('/editar/<servicio_id>', methods=['GET', 'POST'])
+def editar_servicio(servicio_id):
+    if 'usuario' not in session:
+        flash("Debes iniciar sesión para editar un anuncio.", "danger")
+        return redirect(url_for('auth.login'))
+
+    servicio = mongo.db.servicios.find_one({"_id": ObjectId(servicio_id)})
+    
+    if not servicio:
+        flash("El anuncio no existe.", "danger")
+        return redirect(url_for('servicios.listar_servicios'))
+
+    # Verificar permisos
+    if session['usuario']['usuario'] != servicio.get('usuario_usuario') and session['usuario']['rol'] != 'admin':
+        flash("No tienes permiso para editar este anuncio.", "danger")
+        return redirect(url_for('servicios.listar_servicios'))
+
+    if request.method == 'POST':
+        # Recoger datos del formulario
+        categoria = request.form.get('categoria')
+        tipo = request.form.get('tipo')
+        titulo = request.form.get('titulo', '').strip()
+        descripcion = request.form.get('descripcion', '').strip()
+        contacto = request.form.get('contacto', '').strip()
+        
+        # Datos específicos para movilidad
+        datos_actualizados = {
+            "categoria": categoria,
+            "tipo": tipo,
+            "titulo": titulo,
+            "descripcion": descripcion,
+            "contacto": contacto
+        }
+
+        if categoria == 'Movilidad/Coche':
+            datos_actualizados['origen'] = request.form.get('origen', '').strip()
+            datos_actualizados['destino'] = request.form.get('destino', '').strip()
+            datos_actualizados['plazas'] = int(request.form.get('plazas', 1))
+        else:
+            # Limpiar si cambió de categoría
+            datos_actualizados['origen'] = None
+            datos_actualizados['destino'] = None
+            datos_actualizados['plazas'] = None
+
+        mongo.db.servicios.update_one({"_id": ObjectId(servicio_id)}, {"$set": datos_actualizados})
+        LogAuditoria.registrar("EDICION_SERVICIO", f"Usuario {session['usuario']['usuario']} editó anuncio: {titulo}")
+        
+        flash('Anuncio actualizado correctamente', 'success')
+        return redirect(url_for('servicios.listar_servicios'))
+    
+    return render_template('servicios/editar.html', servicio=servicio)

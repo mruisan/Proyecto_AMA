@@ -7,7 +7,10 @@ from models.log_model import LogAuditoria
 
 habitabilidad_bp = Blueprint('habitabilidad', __name__, url_prefix='/alojamiento')
 
-# Definimos la ruta base del proyecto para asegurar que las carpetas existan
+# ========================================================
+# RUTA BASE DEL PROYECTO. ASEGURA QUE EXISTAN LAS CARPETAS
+# ========================================================
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'uploads')
 
@@ -115,3 +118,48 @@ def eliminar_inmueble(inmueble_id):
         flash("No tienes permisos.", "danger")
         
     return redirect(url_for('habitabilidad.listar_inmuebles'))
+
+# ========================================================
+# EDITAR PUBLICACIONES
+# ========================================================
+
+@habitabilidad_bp.route('/editar/<string:inmueble_id>', methods=['GET', 'POST'])
+def editar_inmueble(inmueble_id):
+    if 'usuario' not in session:
+        return redirect(url_for('auth.login'))
+
+    inmueble = mongo.db.habitabilidad.find_one({"_id": ObjectId(inmueble_id)})
+    
+    if not inmueble:
+        flash("El alojamiento no existe.", "danger")
+        return redirect(url_for('habitabilidad.listar_inmuebles'))
+
+    # Comprobar permisos
+    if inmueble.get('propietario_usuario') != session['usuario']['usuario'] and session['usuario']['rol'] != 'admin':
+        flash("No tienes permisos para editar este anuncio.", "danger")
+        return redirect(url_for('habitabilidad.listar_inmuebles'))
+
+    if request.method == 'POST':
+        # Manejo de nueva imagen si se sube
+        archivo = request.files.get('imagen')
+        datos_actualizados = {
+            "tipo_vivienda": request.form.get('tipo_vivienda'),
+            "precio": float(request.form.get('precio', 0)),
+            "ubicacion": request.form.get('ubicacion', '').strip(),
+            "habitaciones": int(request.form.get('habitaciones', 1)),
+            "titulo": request.form.get('titulo', '').strip(),
+            "descripcion": request.form.get('descripcion', '').strip(),
+            "contacto": request.form.get('contacto', '').strip(),
+        }
+
+        if archivo and archivo.filename != '':
+            filename = secure_filename(archivo.filename)
+            archivo.save(os.path.join(UPLOAD_FOLDER, filename))
+            datos_actualizados['imagen'] = f'uploads/{filename}'
+
+        mongo.db.habitabilidad.update_one({"_id": ObjectId(inmueble_id)}, {"$set": datos_actualizados})
+        LogAuditoria.registrar("EDICION_ALOJAMIENTO", f"Usuario {session['usuario']['usuario']} editó: {datos_actualizados['titulo']}")
+        flash("Anuncio actualizado correctamente.", "success")
+        return redirect(url_for('habitabilidad.listar_inmuebles'))
+
+    return render_template('habitabilidad/editar.html', inmueble=inmueble)

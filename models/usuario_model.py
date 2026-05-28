@@ -1,12 +1,13 @@
 # models/usuario_model.py
+
 from werkzeug.security import generate_password_hash, check_password_hash
 
 class Usuario:
-    def __init__(self, tip, nombre, password, rol='usuario', email=None):
-        self.tip = tip.upper()       # Usaremos el TIP o DNI como identificador único de acceso
+    def __init__(self, usuario, nombre, password, rol='usuario', email=None):
+        self.usuario = usuario.upper()       			# Usaremos el usuario (dicodef) como identificador único de acceso
         self.nombre = nombre
-        self.password_hash = self.set_password(password) # Cifrado no reversible
-        self.rol = rol               # Roles: 'admin', 'usuario'
+        self.password_hash = self.set_password(password) 	# Cifrado no reversible
+        self.rol = rol               				# Roles: 'admin', 'usuario'
         self.email = email
 
     @staticmethod
@@ -22,7 +23,7 @@ class Usuario:
     def to_dict(self):
         """Convierte el objeto en un diccionario listo para ser insertado en MongoDB."""
         return {
-            "tip": self.tip,
+            "tip": self.usuario,
             "nombre": self.nombre,
             "password_hash": self.password_hash,
             "rol": self.rol,
